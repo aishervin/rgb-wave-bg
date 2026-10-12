@@ -1,87 +1,37 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGB Wave Background</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #050508; font-family: system-ui, -apple-system, sans-serif; }
-        canvas { display: block; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
-        .overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #ffffff;
-            z-index: 10;
-            pointer-events: none;
-            background: rgba(10, 10, 15, 0.45);
-            padding: 30px 50px;
-            border-radius: 20px;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        }
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, #ff007f, #00f0ff, #7000ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        p { font-size: 1rem; color: #a0a0b0; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <canvas id="waveCanvas"></canvas>
-    <div class="overlay">
-        <h1>RGB WAVE BACKGROUND</h1>
-        <p>Deployed via SHEN™ Autonomous Cloud Operator</p>
-    </div>
+    <canvas id="canvas"></canvas>
     <script>
-        const canvas = document.getElementById('waveCanvas');
+        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let width, height;
-        let step = 0;
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
+        let w, h, time = 0;
+        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-
-        function animate() {
-            ctx.fillStyle = 'rgba(5, 5, 8, 0.08)';
-            ctx.fillRect(0, 0, width, height);
-            step += 0.015;
-
-            const lines = 6;
-            for (let i = 0; i < lines; i++) {
+        function draw() {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillRect(0, 0, w, h);
+            for(let i = 0; i < 100; i++) {
                 ctx.beginPath();
-                ctx.lineWidth = 3;
-                
-                const r = Math.floor(127 + 127 * Math.sin(step + i));
-                const g = Math.floor(127 + 127 * Math.sin(step + i + 2));
-                const b = Math.floor(127 + 127 * Math.sin(step + i + 4));
-                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.85)`;
-
-                for (let x = 0; x < width; x += 10) {
-                    const y = Math.sin(x * 0.005 + step + i * 0.7) * 120 
-                            + Math.cos(x * 0.003 - step * 0.5) * 80 
-                            + height / 2;
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
+                ctx.strokeStyle = `hsl(${(time + i * 2) % 360}, 80%, 50%)`;
+                ctx.moveTo(w/2, h/2);
+                ctx.lineTo(w/2 + Math.cos(time/50 + i) * 200, h/2 + Math.sin(time/50 + i) * 200);
                 ctx.stroke();
             }
-            requestAnimationFrame(animate);
+            time++;
+            requestAnimationFrame(draw);
         }
-        animate();
+        draw();
     </script>
 </body>
 </html>
